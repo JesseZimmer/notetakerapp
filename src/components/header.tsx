@@ -11,7 +11,7 @@ export const Header = () => {
           <div>
             <button
               onClick={() =>
-                void signOut({ callbackUrl: "http://localhost:3000" })
+                void signOut({ callbackUrl: "/" })
               }
             >
               Sign Out

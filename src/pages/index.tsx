@@ -6,6 +6,7 @@ import { api } from "../utils/api";
 
 const Home: NextPage = (props) => {
 
+
   return (
     <>
       <Head>
@@ -17,7 +18,8 @@ const Home: NextPage = (props) => {
         <div className="grid h-screen place-items-center">
           <div className="flex flex-col items-center">
             <div className="text-2xl">Please sign in to start taking notes</div>
-            <button onClick={() => void signIn('github', { callbackUrl: `${window.location.origin}/topics` })}>Sign in</button>
+            <button onClick={() => void signIn('github', { callbackUrl: `/topics` })}>Sign in</button>
+            <p>{}</p>
           </div>
         </div>
       </main>
