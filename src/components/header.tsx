@@ -4,7 +4,7 @@ export const Header = () => {
   const { data: sessionData } = useSession();
 
   return (
-    <div className="navbar flex justify-between bg-primary text-primary-content">
+    <div className="navbar flex justify-between bg-cyan-500 text-primary-content">
       <div>Jesse&apos;s Note Taking App</div>
       <div className="flex-none gap-2">
         {sessionData?.user ? (

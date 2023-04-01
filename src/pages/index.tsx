@@ -3,10 +3,15 @@ import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "../utils/api";
+import { useRouter } from "next/router";
 
 const Home: NextPage = (props) => {
+  const router = useRouter();
+  const { status } = useSession();
 
-
+  if (status === "authenticated") {
+    void router.push("/notes");
+  }
   return (
     <>
       <Head>
@@ -18,7 +23,11 @@ const Home: NextPage = (props) => {
         <div className="grid h-screen place-items-center">
           <div className="flex flex-col items-center">
             <div className="text-2xl">Please sign in to start taking notes</div>
-            <button onClick={() => void signIn('github', { callbackUrl: `/topics` })}>Sign in</button>
+            <button
+              onClick={() => void signIn("github", { callbackUrl: `/notes` })}
+            >
+              Sign in
+            </button>
             <p>{}</p>
           </div>
         </div>
