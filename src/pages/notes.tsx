@@ -3,7 +3,7 @@ import { Router } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession, getSession } from "next-auth/react";
-import { api, type RouterOutputs} from "../utils/api";
+import { api, type RouterOutputs } from "../utils/api";
 import React, { useState } from "react";
 
 const NotesPage: NextPage = (props) => {
@@ -27,12 +27,13 @@ const NotesPage: NextPage = (props) => {
       <div className="m-2">
         <div className="grid grid-cols-4">
           <div className="flex flex-col">
-            <div className=" text-lg">Welcome back {sessionData?.user?.name}</div>
+            <div className=" text-lg">
+              Welcome back {sessionData?.user?.name}
+            </div>
             <div>Topics</div>
             <Content />
           </div>
-          <div className="col-span-3">
-          </div>
+          <div className="col-span-3"></div>
         </div>
       </div>
     </>
@@ -41,14 +42,14 @@ const NotesPage: NextPage = (props) => {
 
 export default NotesPage;
 
-type Topic = RouterOutputs["topic"]["getAll"][0]
+type Topic = RouterOutputs["topic"]["getAll"][0];
 
 const Content: React.FC = () => {
-  const {data: sessionData} = useSession();
+  const { data: sessionData } = useSession();
 
   const [selectedTopic, setSeletedTopic] = useState<Topic | null>(null);
 
-  const {data: topics, refetch: refreshTopics} = api.topic.getAll.useQuery(
+  const { data: topics, refetch: refreshTopics } = api.topic.getAll.useQuery(
     undefined,
     {
       enabled: sessionData?.user !== undefined,
@@ -64,6 +65,32 @@ const Content: React.FC = () => {
     },
   });
 
+  return (
+    <>
 
-  return (<></>)
-}
+      {topics?.map((topic) => (
+        <li key={topic.id}>
+          {topic.title}
+        </li>
+      ))}
+
+      <div className="divider"></div>
+
+      <form>
+        <input
+          type="tex"
+          placeholder="New Topic"
+          className="input-bordered w-full"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              createTopic.mutate({
+                title: e.currentTarget.value,
+              });
+              e.currentTarget.value = "";
+            }
+          }}
+        />
+      </form>
+    </>
+  );
+};
