@@ -70,9 +70,9 @@ const Content: React.FC = () => {
     setEditTopic((current) => !current);
   }
 
-  const handleUpdatedTopic = (event: any) => {
+/*   const handleUpdatedTopic = (event) => {
     setUpdatedTopic(event.target.value);
-  };
+  }; */
 
   const createTopic = api.topic.create.useMutation({
     onSuccess: () => {
@@ -151,7 +151,7 @@ const Content: React.FC = () => {
                   id="updateTopicInput"
                   type="text"
                   placeholder={selectedTopic?.title}
-                  onChange={handleUpdatedTopic}
+                  onChange={event => setUpdatedTopic(event.target.value)}
                   className=" mb-2 w-full flex-none border border-black px-1"
                 />
                 <div className="flex flex-row gap-2">
@@ -160,7 +160,7 @@ const Content: React.FC = () => {
                     onClick={() =>
                       void updateTopic.mutate({
                         title: updatedTopic,
-                        id: selectedTopic?.id,
+                        id: selectedTopic?.id as string,
                       })
                     }
                   >
@@ -169,7 +169,7 @@ const Content: React.FC = () => {
                   <button
                     className="btn-sm btn"
                     onClick={() =>
-                      void deleteTopic.mutate({ id: selectedTopic?.id })
+                      void deleteTopic.mutate({ id: selectedTopic?.id as string })
                     }
                   >
                     Delete
