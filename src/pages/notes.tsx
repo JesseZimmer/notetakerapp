@@ -30,7 +30,7 @@ const NotesPage: NextPage = (props) => {
             <div className=" text-lg">
               Welcome back {sessionData?.user?.name}
             </div>
-            <div>Topics</div>
+            
             <Content />
           </div>
           <div className="col-span-3"></div>
@@ -67,15 +67,6 @@ const Content: React.FC = () => {
 
   return (
     <>
-
-      {topics?.map((topic) => (
-        <li key={topic.id}>
-          {topic.title}
-        </li>
-      ))}
-
-      <div className="divider"></div>
-
       <form>
         <input
           type="tex"
@@ -91,6 +82,13 @@ const Content: React.FC = () => {
           }}
         />
       </form>
+      <div className="divider"></div>
+
+      {topics?.map((topic) => (
+        <li key={topic.id}>
+          <a href="#">{topic.title}</a>
+        </li>
+      ))}
     </>
   );
 };
