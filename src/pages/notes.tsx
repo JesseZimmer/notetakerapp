@@ -98,7 +98,7 @@ const Content: React.FC = () => {
         <div className="grid-cols-1">
           {topics?.map((topic) => (
             <p
-              className="w-full rounded-2xl pl-2 hover:bg-blue-300 focus:bg-blue-500 focus:text-white"
+              className="w-full rounded-2xl pl-2 hover:bg-blue-300 focus:bg-blue-500 focus:text-white hover:cursor-pointer"
               key={topic.id}
               onClick={(e) => {
                 e.preventDefault();
@@ -110,6 +110,7 @@ const Content: React.FC = () => {
               </a>
             </p>
           ))}
+          
           <div className="divider"></div>
           <div className="flex flex-col">
             {selectedTopic ? (
