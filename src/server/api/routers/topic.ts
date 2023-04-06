@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { title } from "process";
 
 export const topicRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
@@ -13,13 +14,33 @@ export const topicRouter = createTRPCRouter({
 
   create: protectedProcedure
     .input(z.object({ title: z.string() }))
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       return ctx.prisma.topic.create({
         data: {
           title: input.title,
           userId: ctx.session.user.id,
         },
       });
+    }),
+
+    delete: protectedProcedure
+    .input(z.object({id: z.string() }))
+    .mutation( async ({ctx, input}) => {
+      return ctx.prisma.topic.delete({
+        where: {
+          id: input.id,
+        }
+
+      })
+    }),
+
+    update: protectedProcedure
+    .input(z.object({title: z.string(), id: z.string()}))
+    .mutation(async ({ctx, input}) => {
+      return ctx.prisma.topic.update({
+        where: {id: input.id},
+        data: {title: input.title}
+      })
     }),
     
 });

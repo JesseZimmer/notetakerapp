@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn, signOut, useSession, getSession } from "next-auth/react";
 import { api, type RouterOutputs } from "../utils/api";
 import React, { useState } from "react";
+import { NoteCard } from "../components/noteCard";
 
 const NotesPage: NextPage = (props) => {
   const { data: sessionData, status } = useSession();
@@ -24,17 +25,13 @@ const NotesPage: NextPage = (props) => {
 
   return (
     <>
-      <div className="m-2">
-        <div className="grid grid-cols-4">
-          <div className="flex flex-col">
-            <div className=" text-lg">
-              Welcome back {sessionData?.user?.name}
-            </div>
-            
-            <Content />
-          </div>
-          <div className="col-span-3"></div>
+      <div className="ml-4 mt-4">
+        <div className=" text-lg">
+          Welcome back
+          <div> {sessionData?.user?.name}</div>
         </div>
+
+        <Content />
       </div>
     </>
   );
@@ -53,11 +50,29 @@ const Content: React.FC = () => {
     undefined,
     {
       enabled: sessionData?.user !== undefined,
-      onSuccess: (data) => {
-        setSeletedTopic(selectedTopic ?? data[0] ?? null);
+      onSuccess: () => {
+        setSeletedTopic(null);
+        setShowNewTopic(false);
+        setEditTopic(false);
       },
     }
   );
+
+  const [showNewTopic, setShowNewTopic] = useState(false);
+  const [editTopic, setEditTopic] = useState(false);
+  const [updatedTopic, setUpdatedTopic] = useState("");
+
+  function handleNewTopic() {
+    setShowNewTopic((current) => !current);
+  }
+
+  function handleEditTopic() {
+    setEditTopic((current) => !current);
+  }
+
+  const handleUpdatedTopic = (event: any) => {
+    setUpdatedTopic(event.target.value);
+  };
 
   const createTopic = api.topic.create.useMutation({
     onSuccess: () => {
@@ -65,30 +80,111 @@ const Content: React.FC = () => {
     },
   });
 
+  const deleteTopic = api.topic.delete.useMutation({
+    onSuccess: () => {
+      void refreshTopics();
+    },
+  });
+
+  const updateTopic = api.topic.update.useMutation({
+    onSuccess: () => {
+      void refreshTopics();
+    },
+  });
+
   return (
     <>
-      <form>
-        <input
-          type="tex"
-          placeholder="New Topic"
-          className="input-bordered w-full"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              createTopic.mutate({
-                title: e.currentTarget.value,
-              });
-              e.currentTarget.value = "";
-            }
-          }}
-        />
-      </form>
-      <div className="divider"></div>
-
-      {topics?.map((topic) => (
-        <li key={topic.id}>
-          <a href="#">{topic.title}</a>
-        </li>
-      ))}
+      <div className="grid grid-cols-4 gap-9">
+        <div className="grid-cols-1">
+          {topics?.map((topic) => (
+            <p
+              className="w-full rounded-2xl pl-2 hover:bg-blue-300 focus:bg-blue-500 focus:text-white"
+              key={topic.id}
+              onClick={(e) => {
+                e.preventDefault();
+                setSeletedTopic(topic);
+              }}
+            >
+              <a href="#" className="">
+                {topic.title}
+              </a>
+            </p>
+          ))}
+          <div className="divider"></div>
+          <div className="flex flex-col">
+            {selectedTopic ? (
+              <></>
+            ) : (
+              <button
+                className="btn-sm btn mb-2 w-1/2 min-w-fit"
+                onClick={handleNewTopic}
+              >
+                New Topic
+              </button>
+            )}
+            {showNewTopic && (
+              <input
+                type="tex"
+                placeholder="Press Enter to submit topic"
+                className=" w-full flex-none border border-black px-1"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    createTopic.mutate({
+                      title: e.currentTarget.value,
+                    });
+                    e.currentTarget.value = "";
+                  }
+                }}
+              />
+            )}
+            {selectedTopic && (
+              <button
+                className="btn-sm btn m-2 w-1/2 min-w-fit"
+                onClick={handleEditTopic}
+              >
+                Edit {selectedTopic?.title}
+              </button>
+            )}
+            {editTopic && (
+              <div>
+                <input
+                  id="updateTopicInput"
+                  type="text"
+                  placeholder={selectedTopic?.title}
+                  onChange={handleUpdatedTopic}
+                  className=" mb-2 w-full flex-none border border-black px-1"
+                />
+                <div className="flex flex-row gap-2">
+                  <button
+                    className="btn-sm btn"
+                    onClick={() =>
+                      void updateTopic.mutate({
+                        title: updatedTopic,
+                        id: selectedTopic?.id,
+                      })
+                    }
+                  >
+                    Update
+                  </button>
+                  <button
+                    className="btn-sm btn"
+                    onClick={() =>
+                      void deleteTopic.mutate({ id: selectedTopic?.id })
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {selectedTopic && (
+          <div className="col-span-3">
+            <NoteCard topic={selectedTopic?.title || ""} />
+          </div>
+        )}
+      </div>
     </>
   );
 };
